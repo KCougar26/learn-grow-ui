@@ -15,9 +15,9 @@ const LessonNode = ({ lesson, index }: LessonNodeProps) => {
 
   const handleClick = () => {
     if (lesson.status === "completed") {
-      navigate("/lesson");
+      navigate(`/lesson?lessonId=${lesson.id}`);
     } else if (lesson.status === "active") {
-      navigate("/lesson");
+      navigate(`/lesson?lessonId=${lesson.id}`);
     }
   };
 

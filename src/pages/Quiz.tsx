@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import { useUser } from "@/hooks/useUserContext";
+import { useCompleteLesson } from "@/hooks/useCompleteLesson";
 import { sampleQuiz } from "@/data/lessons";
 import { Check, X } from "lucide-react";
 
 const Quiz = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const { markLessonComplete } = useCompleteLesson();
+  const [searchParams] = useSearchParams();
+  const lessonId = parseInt(searchParams.get("lessonId") || "1");
+  
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -34,8 +42,23 @@ const Quiz = () => {
     }
   };
 
+  const handleQuizComplete = async () => {
+    if (!user) return;
+
+    const totalQuestions = sampleQuiz.length;
+    const pct = Math.round((score / totalQuestions) * 100);
+    const passed = pct >= 60;
+
+    // Mark lesson as complete if passed
+    if (passed) {
+      await markLessonComplete(user.user_id, lessonId);
+    }
+  };
+
   if (finished) {
     const pct = Math.round((score / sampleQuiz.length) * 100);
+    const passed = pct >= 60;
+    
     return (
       <AppLayout>
         <div className="px-5 py-10 flex flex-col items-center gap-6 text-center animate-bounce-in">
@@ -46,6 +69,9 @@ const Quiz = () => {
             <p className="text-sm text-muted-foreground mt-1">
               {score} out of {sampleQuiz.length} correct
             </p>
+            {passed && (
+              <p className="text-xs text-success font-semibold mt-2">✓ PASSED - Lesson Completed!</p>
+            )}
           </div>
           <p className="text-sm text-muted-foreground max-w-xs">
             {pct >= 80
@@ -54,7 +80,11 @@ const Quiz = () => {
           </p>
           <div className="flex gap-3 w-full">
             <button
-              onClick={() => navigate("/")}
+              onClick={async () => {
+                await handleQuizComplete();
+                // Small delay to ensure database update completes
+                setTimeout(() => navigate("/"), 500);
+              }}
               className="flex-1 py-3 rounded-xl bg-card border border-border text-foreground font-semibold text-sm"
             >
               Home

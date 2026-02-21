@@ -1,5 +1,70 @@
-// This file is auto-generated from the database
-// Generated at: 2026-02-21T03:06:30.342Z
+import pg from 'pg';
+import * as dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+
+dotenv.config();
+
+const { Pool } = pg;
+
+const poolConfig = {
+  user: process.env.VITE_DB_USER,
+  host: process.env.VITE_DB_HOST,
+  port: parseInt(process.env.VITE_DB_PORT || '5432'),
+  database: process.env.VITE_DB_NAME,
+};
+
+if (process.env.VITE_DB_PASSWORD && process.env.VITE_DB_PASSWORD.trim()) {
+  poolConfig.password = process.env.VITE_DB_PASSWORD;
+}
+
+const pool = new Pool(poolConfig);
+
+async function generateLessonsFile() {
+  try {
+    console.log('Fetching lessons data from database...');
+    
+    // Fetch lessons
+    const lessonsResult = await pool.query(`
+      SELECT lesson_id as id, theme as title, level, extra_links 
+      FROM Lessons 
+      ORDER BY level ASC
+    `);
+
+    // Fetch quizzes
+    const quizzesResult = await pool.query(`
+      SELECT quiz_id as id, lesson_id, num_of_questions 
+      FROM Quizzes
+    `);
+
+    // Fetch badges
+    const badgesResult = await pool.query(`
+      SELECT badge_id as id, badge_name as name, badge_level as level
+      FROM Badges
+      ORDER BY badge_level ASC
+    `);
+
+    const lessons = lessonsResult.rows.map(lesson => ({
+      id: lesson.id,
+      title: lesson.title,
+      description: `Level ${lesson.level} lesson on ${lesson.title.toLowerCase()}`,
+      duration: '5 min',
+      status: 'active',
+      category: lesson.title,
+      level: lesson.level,
+      extraLinks: lesson.extra_links,
+    }));
+
+    const badges = badgesResult.rows.map(badge => ({
+      id: badge.id,
+      name: badge.name,
+      emoji: getEmojiForBadge(badge.name),
+      earned: false,
+    }));
+
+    // Generate TypeScript file content
+    const fileContent = `// This file is auto-generated from the database
+// Generated at: ${new Date().toISOString()}
 
 export interface Lesson {
   id: number;
@@ -15,38 +80,7 @@ export interface Lesson {
   extraLinks?: string;
 }
 
-export const lessons: Lesson[] = [
-  {
-    "id": 1,
-    "title": "Nutrition Basics",
-    "description": "Level 1 lesson on nutrition basics",
-    "duration": "5 min",
-    "status": "active",
-    "category": "Nutrition Basics",
-    "level": 1,
-    "extraLinks": "https://sqltutorial.com"
-  },
-  {
-    "id": 2,
-    "title": "Proteins",
-    "description": "Level 2 lesson on proteins",
-    "duration": "5 min",
-    "status": "active",
-    "category": "Proteins",
-    "level": 2,
-    "extraLinks": "https://sqljoins.com"
-  },
-  {
-    "id": 3,
-    "title": "Healthy and Unhealthy Fats",
-    "description": "Level 3 lesson on healthy and unhealthy fats",
-    "duration": "5 min",
-    "status": "active",
-    "category": "Healthy and Unhealthy Fats",
-    "level": 3,
-    "extraLinks": "https://advanced-sql.com"
-  }
-];
+export const lessons: Lesson[] = ${JSON.stringify(lessons, null, 2)};
 
 export interface Badge {
   id: number;
@@ -55,26 +89,7 @@ export interface Badge {
   earned: boolean;
 }
 
-export const badges: Badge[] = [
-  {
-    "id": 1,
-    "name": "New learner",
-    "emoji": "🌱",
-    "earned": false
-  },
-  {
-    "id": 2,
-    "name": "Streak Legend",
-    "emoji": "🏆",
-    "earned": false
-  },
-  {
-    "id": 3,
-    "name": "Nutrition Fiend",
-    "emoji": "🍎",
-    "earned": false
-  }
-];
+export const badges: Badge[] = ${JSON.stringify(badges, null, 2)};
 
 export interface QuizQuestion {
   id: number;
@@ -135,3 +150,31 @@ export const lessonContent = {
     },
   ],
 };
+`;
+
+    const filePath = path.join(process.cwd(), 'src', 'data', 'lessons.ts');
+    fs.writeFileSync(filePath, fileContent);
+
+    console.log('✅ Successfully generated lessons.ts from database!');
+    console.log(`📝 Lessons: ${lessons.length}`);
+    console.log(`🎖️ Badges: ${badges.length}`);
+    
+    await pool.end();
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error generating lessons file:', error);
+    await pool.end();
+    process.exit(1);
+  }
+}
+
+function getEmojiForBadge(badgeName) {
+  const emojiMap = {
+    'New learner': '🌱',
+    'Streak Legend': '🏆',
+    'Nutrition Fiend': '🍎',
+  };
+  return emojiMap[badgeName] || '⭐';
+}
+
+generateLessonsFile();

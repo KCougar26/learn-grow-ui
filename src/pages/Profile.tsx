@@ -1,14 +1,32 @@
 import AppLayout from "@/components/AppLayout";
 import { lessons, badges } from "@/data/lessons";
+import { useUser } from "@/hooks/useUserContext";
+import { useUserLessons } from "@/hooks/useUserLessons";
 import { User, ChevronRight } from "lucide-react";
 
 const Profile = () => {
-  const completed = lessons.filter((l) => l.status === "completed");
-  const inProgress = lessons.filter((l) => l.status === "active");
+  const { user, loading } = useUser();
+  const { userLessons } = useUserLessons(user?.user_id || null);
+  
+  // Get Alice's lesson progress
+  const completedLessons = userLessons.filter((ul) => ul.status === 'Completed');
+  const inProgressLessons = userLessons.filter((ul) => ul.status === 'In Progress');
+  const completed = completedLessons.length;
+  const inProgress = inProgressLessons.length;
   const earnedBadges = badges.filter((b) => b.earned);
-  const streak = 12;
+  const streak = user?.current_streak || 12;
   const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "S"];
   const activeToday = [true, true, true, true, true, false, false];
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="px-5 py-6 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -18,13 +36,18 @@ const Profile = () => {
           <div className="w-20 h-20 rounded-full bg-card border-4 border-border flex items-center justify-center card-elevated">
             <User className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-bold text-foreground">My Profile</h2>
+          <h2 className="text-lg font-bold text-foreground">
+            {user ? `${user.first_name} ${user.last_name}` : "My Profile"}
+          </h2>
+          {user && (
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          )}
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value: completed.length, label: "Lessons\nCompleted" },
+            { value: completed, label: "Lessons\nCompleted" },
             { value: streak, label: "Day\nStreak" },
             { value: earnedBadges.length, label: "Badges\nEarned" },
           ].map((stat) => (
@@ -66,17 +89,24 @@ const Profile = () => {
             <h3 className="text-base font-bold text-foreground">Completed Lessons</h3>
           </div>
           <div className="space-y-2">
-            {completed.map((lesson) => (
-              <div key={lesson.id} className="bg-card rounded-xl p-3 flex items-center gap-3 card-elevated">
-                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
-                  <span className="text-success text-sm font-bold">✓</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-foreground">{lesson.title}</p>
-                  <p className="text-xs text-muted-foreground">{lesson.score}% Score</p>
-                </div>
-              </div>
-            ))}
+            {completedLessons.length > 0 ? (
+              completedLessons.map((userLesson) => {
+                const lesson = lessons.find((l) => l.id === userLesson.lesson_id);
+                return lesson ? (
+                  <div key={lesson.id} className="bg-card rounded-xl p-3 flex items-center gap-3 card-elevated">
+                    <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+                      <span className="text-success text-sm font-bold">✓</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground">{lesson.title}</p>
+                      <p className="text-xs text-muted-foreground">Completed</p>
+                    </div>
+                  </div>
+                ) : null;
+              })
+            ) : (
+              <p className="text-sm text-muted-foreground">No completed lessons yet</p>
+            )}
           </div>
         </section>
 
@@ -87,25 +117,24 @@ const Profile = () => {
             <h3 className="text-base font-bold text-foreground">In Progress</h3>
           </div>
           <div className="space-y-2">
-            {inProgress.map((lesson) => (
-              <div key={lesson.id} className="bg-card rounded-xl p-3 flex items-center gap-3 card-elevated">
-                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                  <span className="text-accent text-sm">📖</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-foreground">{lesson.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {lesson.modulesCompleted} of {lesson.modulesTotal} Modules Complete
-                  </p>
-                  <div className="mt-1.5 h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-accent rounded-full"
-                      style={{ width: `${(lesson.modulesCompleted! / lesson.modulesTotal!) * 100}%` }}
-                    />
+            {inProgressLessons.length > 0 ? (
+              inProgressLessons.map((userLesson) => {
+                const lesson = lessons.find((l) => l.id === userLesson.lesson_id);
+                return lesson ? (
+                  <div key={lesson.id} className="bg-card rounded-xl p-3 flex items-center gap-3 card-elevated">
+                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                      <span className="text-accent text-sm">📖</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground">{lesson.title}</p>
+                      <p className="text-xs text-muted-foreground">In Progress</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                ) : null;
+              })
+            ) : (
+              <p className="text-sm text-muted-foreground">No lessons in progress</p>
+            )}
           </div>
         </section>
 

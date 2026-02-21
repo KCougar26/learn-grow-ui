@@ -1,13 +1,78 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
-import { lessonContent } from "@/data/lessons";
+import { lessons } from "@/data/lessons";
 import eagleMascot from "@/assets/eagle-mascot.png";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Lesson = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const lessonId = parseInt(searchParams.get("lessonId") || "1");
   const [currentSection, setCurrentSection] = useState(0);
+
+  // Lesson content for each lesson
+  const lessonContentMap: Record<number, any> = {
+    1: {
+      title: "Nutrition Basics",
+      duration: "5 min",
+      sections: [
+        {
+          heading: "What are Macronutrients?",
+          content: "Macronutrients are the three main types of nutrients your body needs in large quantities: carbohydrates, proteins, and fats. These provide energy and build the structures in your body."
+        },
+        {
+          heading: "Carbohydrates",
+          content: "Carbs are your body's primary energy source. They're found in foods like grains, fruits, and vegetables. Choose whole grains for sustained energy and better nutrition."
+        },
+        {
+          heading: "Proteins",
+          content: "Proteins build and repair muscles, skin, and other tissues. Great sources include chicken, fish, eggs, beans, and nuts. Everyone needs protein daily!"
+        }
+      ],
+      keyTakeaway: "A balanced diet includes all three macronutrients. Carbs for energy, protein for building, and fat for hormone production and nutrient absorption."
+    },
+    2: {
+      title: "Proteins",
+      duration: "5 min",
+      sections: [
+        {
+          heading: "Understanding Proteins",
+          content: "Proteins are made up of amino acids, which are the building blocks of life. Your body uses them to build and repair muscles, enzymes, and hormones."
+        },
+        {
+          heading: "Complete vs Incomplete Proteins",
+          content: "Complete proteins contain all 9 essential amino acids your body can't make. Animal sources (meat, eggs, dairy) are complete, while most plant sources need combining."
+        },
+        {
+          heading: "How Much Protein?",
+          content: "Most people need 0.8-1g per pound of body weight daily. Athletes may need more. Spread protein throughout the day for optimal muscle recovery and growth."
+        }
+      ],
+      keyTakeaway: "Protein is essential for muscle building, repair, and countless body functions. Aim for varied sources to get all amino acids your body needs."
+    },
+    3: {
+      title: "Healthy and Unhealthy Fats",
+      duration: "5 min",
+      sections: [
+        {
+          heading: "Types of Fats",
+          content: "Not all fats are bad! Your body needs fat for hormone production, nutrient absorption, and brain function. The key is knowing which fats to choose."
+        },
+        {
+          heading: "Healthy Fats",
+          content: "Monounsaturated and polyunsaturated fats are heart-healthy. Find them in avocados, nuts, seeds, olive oil, and fatty fish like salmon. These reduce inflammation!"
+        },
+        {
+          heading: "Unhealthy Fats",
+          content: "Saturated and trans fats can raise cholesterol and increase heart disease risk. Limit processed foods, fried items, and fatty meats. Read nutrition labels!"
+        }
+      ],
+      keyTakeaway: "Choose healthy fats from whole foods. Your heart, brain, and hormones will thank you for making smart fat choices daily."
+    }
+  };
+
+  const lessonContent = lessonContentMap[lessonId] || lessonContentMap[1];
   const totalSections = lessonContent.sections.length + 1; // +1 for key takeaway
 
   const isOnTakeaway = currentSection === lessonContent.sections.length;
@@ -36,7 +101,7 @@ const Lesson = () => {
 
         {/* Lesson title */}
         <div className="text-center">
-          <p className="text-xs text-muted-foreground font-medium">Lesson 1</p>
+          <p className="text-xs text-muted-foreground font-medium">Lesson {lessonId}</p>
           <h2 className="text-xl font-extrabold text-foreground">{lessonContent.title}</h2>
         </div>
 
@@ -95,7 +160,7 @@ const Lesson = () => {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/quiz")}
+              onClick={() => navigate(`/quiz?lessonId=${lessonId}`)}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:opacity-90 transition-opacity"
             >
               Quiz Me 🎯
@@ -107,7 +172,9 @@ const Lesson = () => {
         <div className="bg-secondary/60 rounded-xl p-4">
           <p className="text-xs font-bold text-foreground mb-1">💡 Why should I care?</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Understanding macronutrients helps you make smarter food choices for energy, recovery, and long-term health — without counting every calorie.
+            {lessonId === 1 && "Understanding macronutrients helps you make smarter food choices for energy, recovery, and long-term health — without counting every calorie."}
+            {lessonId === 2 && "Protein is the building block of muscle, skin, and every cell in your body. Eating enough protein supports strength and recovery."}
+            {lessonId === 3 && "Choosing the right fats protects your heart, supports brain function, and helps your body absorb essential vitamins."}
           </p>
         </div>
       </div>
