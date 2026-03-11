@@ -1,65 +1,112 @@
--- ==========================
--- Insert Users
--- ==========================
-INSERT INTO Users (first_name, last_name, email, password_hash, current_streak, max_streak)
-VALUES
-('Alice', 'Johnson', 'alice@example.com', 'hashed_pw_1', 5, 10),
-('Bob', 'Smith', 'bob@example.com', 'hashed_pw_2', 2, 4),
-('Charlie', 'Brown', 'charlie@example.com', 'hashed_pw_3', 7, 12);
+-- ==========================================
+-- UNITS
+-- ==========================================
 
--- ==========================
--- Insert Lessons
--- ==========================
-INSERT INTO Lessons (theme, level, extra_links, prereq_lesson_id)
-VALUES
-('Nutrition Basics', 1, 'https://sqltutorial.com', NULL),
-('Proteins', 2, 'https://sqljoins.com', 1),
-('Healthy and Unhealthy Fats', 3, 'https://advanced-sql.com', 2);
+INSERT INTO Units (unit_title, unit_order) VALUES
+('Welcome & Nutrition Basics',1),
+('Macronutrients - Your Body''s Fuel',2),
+('Micronutrients - Small But Mighty',3),
+('Digestion & Nutrient Absorption',4),
+('Reading Labels & Making Informed Choices',5);
 
--- ==========================
--- Insert Quizzes
--- ==========================
+-- ==========================================
+-- LESSONS
+-- ==========================================
+
+INSERT INTO Lessons (unit_id, theme, level) VALUES
+
+-- UNIT 1
+(1,'Welcome to NutriLearn',1),
+(1,'What is Nutrition?',1),
+(1,'The Basic Food Groups',1),
+(1,'Calories Explained',1),
+(1,'How Your Body Uses Food',1),
+
+-- UNIT 2
+(2,'Introduction to Macronutrients',2),
+(2,'Carbohydrates - Your Energy Source',2),
+(2,'Proteins - Your Building Blocks',2),
+(2,'Fats - Essential and Misunderstood',2),
+(2,'Balancing Your Macros',2),
+
+-- UNIT 3
+(3,'Introduction to Micronutrients',3),
+(3,'Water-Soluble Vitamins (B & C)',3),
+(3,'Fat-Soluble Vitamins (A, D, E, K)',3),
+(3,'Important Minerals',3),
+(3,'Getting Enough Micronutrients',3),
+
+-- UNIT 4
+(4,'The Digestive System in Detail',4),
+(4,'How Nutrients Are Absorbed',4),
+(4,'Gut Health and Microbiome Basics',4),
+(4,'Factors That Affect Digestion',4),
+
+-- UNIT 5
+(5,'Understanding the Nutrition Facts Label',5),
+(5,'Ingredient Lists Decoded',5),
+(5,'Marketing Claims vs Reality',5),
+(5,'Comparing Food Products',5);
+
+-- ==========================================
+-- LESSON CARDS (3 per lesson)
+-- ==========================================
+
+INSERT INTO Lesson_Cards (lesson_id, card_order, card_text)
+SELECT lesson_id,1,'Introduction to this nutrition concept.' FROM Lessons;
+
+INSERT INTO Lesson_Cards (lesson_id, card_order, card_text)
+SELECT lesson_id,2,'Important explanation and examples related to this lesson topic.' FROM Lessons;
+
+INSERT INTO Lesson_Cards (lesson_id, card_order, card_text)
+SELECT lesson_id,3,'Key takeaway and real-world nutrition example.' FROM Lessons;
+
+-- ==========================================
+-- QUIZZES (1 per lesson)
+-- ==========================================
+
 INSERT INTO Quizzes (lesson_id, num_of_questions)
-VALUES
-(1, 10),
-(2, 15),
-(3, 20);
+SELECT lesson_id,5 FROM Lessons;
 
--- ==========================
--- Insert User_Lessons
--- ==========================
-INSERT INTO User_Lessons (user_id, lesson_id, status, completed_at)
-VALUES
-(1, 1, 'Completed', NOW()),
-(1, 2, 'In Progress', NULL),
-(2, 1, 'Completed', NOW()),
-(3, 1, 'Completed', NOW());
+-- ==========================================
+-- QUIZ QUESTIONS (5 per quiz)
+-- ==========================================
 
--- ==========================
--- Insert User_Quizzes
--- ==========================
-INSERT INTO User_Quizzes (user_id, quiz_id, score, attempt_number, passed)
-VALUES
-(1, 1, 9, 1, TRUE),
-(1, 2, 10, 1, FALSE),
-(2, 1, 8, 1, TRUE),
-(3, 1, 10, 1, TRUE);
+INSERT INTO Quiz_Questions (quiz_id, question_order, question_text)
+SELECT quiz_id,1,'Which statement best describes the concept from this lesson?' FROM Quizzes;
 
--- ==========================
--- Insert Badges
--- ==========================
-INSERT INTO Badges (badge_name, badge_level)
-VALUES
-('New learner', 1),
-('Streak Legend', 2),
-('Nutrition Fiend', 3);
+INSERT INTO Quiz_Questions (quiz_id, question_order, question_text)
+SELECT quiz_id,2,'Why is this nutrition concept important?' FROM Quizzes;
 
--- ==========================
--- Insert User_Badges
--- ==========================
-INSERT INTO User_Badges (user_id, badge_id)
-VALUES
-(1, 1),
-(2, 1),
-(3, 1),
-(3, 2);
+INSERT INTO Quiz_Questions (quiz_id, question_order, question_text)
+SELECT quiz_id,3,'Which example best represents this idea?' FROM Quizzes;
+
+INSERT INTO Quiz_Questions (quiz_id, question_order, question_text)
+SELECT quiz_id,4,'What is the key takeaway from this lesson?' FROM Quizzes;
+
+INSERT INTO Quiz_Questions (quiz_id, question_order, question_text)
+SELECT quiz_id,5,'Which choice best supports healthy eating habits?' FROM Quizzes;
+
+-- ==========================================
+-- QUIZ ANSWERS (3 per question)
+-- ==========================================
+
+INSERT INTO Quiz_Answers (question_id, answer_text, is_correct)
+SELECT question_id,'Correct Answer',TRUE FROM Quiz_Questions;
+
+INSERT INTO Quiz_Answers (question_id, answer_text, is_correct)
+SELECT question_id,'Incorrect Option A',FALSE FROM Quiz_Questions;
+
+INSERT INTO Quiz_Answers (question_id, answer_text, is_correct)
+SELECT question_id,'Incorrect Option B',FALSE FROM Quiz_Questions;
+
+-- ==========================================
+-- BADGES
+-- ==========================================
+
+INSERT INTO Badges (badge_name, badge_level) VALUES
+('Nutrition Beginner',1),
+('Macro Master',2),
+('Vitamin Expert',3),
+('Digestive Guru',4),
+('Label Detective',5);
