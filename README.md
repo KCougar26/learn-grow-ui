@@ -94,12 +94,12 @@ bun install
 3. **Create the database schema**:
    - Open [schema.sql](schema.sql) from the project root
    - Copy and paste the contents into your PostgreSQL client (pgAdmin, psql, etc.)
-   - Execute the SQL to create the `users` and `user_lessons` tables
+   - Execute the SQL to create the `users` and all consquent tables
 
 4. **Seed the database** with sample data:
    - Open [seed.sql](seed.sql) from the project root
    - Copy and paste the contents into your PostgreSQL client
-   - Execute the SQL to populate the database with sample users and lessons
+   - Execute the SQL to populate the database with sample users and all units, lessons, and quizzes
 
 ### Step 4: Configure Environment Variables
 
