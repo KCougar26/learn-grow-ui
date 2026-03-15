@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import eagleMascot from "@/assets/eagle-mascot.png";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { lessonContentMap } from "@/data/lessons";
 
 interface ApiCard {
   card_id: number;

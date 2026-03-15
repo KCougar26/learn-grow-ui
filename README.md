@@ -1,22 +1,65 @@
-# Welcome to your Lovable project
+# Learn & Grow — Nutrition Education App
 
-## Project info
+## 1. App Summary
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Learn & Grow is a nutrition education web application built for busy young adults who want to understand food without the overwhelm of diet culture or calorie tracking. The core problem it addresses is that most people lack foundational nutrition knowledge — not because they don't care, but because existing resources are either too clinical, too prescriptive, or too time-consuming to fit into a real daily routine. Rather than telling users what to eat, Learn & Grow focuses on education and understanding: how different nutrients affect the body, how to read food labels confidently, and how to apply nutrition principles to their own goals and preferences. The platform delivers this through short, interactive lessons backed by science and grounded in real-world food examples, paired with light gamification to keep users engaged and motivated. Lessons unlock progressively as users advance, and a quiz at the end of each lesson (requiring 60% or higher to pass) reinforces learning before moving on. Progress is persisted to a PostgreSQL database so users can pick up exactly where they left off across sessions.
 
-## How to Run on Local Machine
+---
 
-This guide will help you set up and run the Learn & Grow nutrition education application locally. The application consists of a React frontend and a Node.js/Express backend API connected to a PostgreSQL database.
+## 2. Tech Stack
 
-### Prerequisites
+| Layer | Technology |
+|---|---|
+| **Frontend Framework** | React 18 (TypeScript) |
+| **Frontend Tooling** | Vite, Tailwind CSS, shadcn/ui, Radix UI |
+| **Routing** | React Router DOM v6 |
+| **Backend Framework** | Node.js with Express 5 |
+| **Database** | PostgreSQL (v12+) |
+| **Database Client** | node-postgres (`pg`) |
+| **Environment Config** | dotenv |
+| **Authentication** | None (demo user auto-login as Alice, user_id = 1) |
+| **External Services** | None |
 
-Before getting started, ensure you have the following installed on your machine:
+---
 
-- **Node.js** (v16 or higher) - [Download here](https://nodejs.org/)
-- **npm** (comes with Node.js) or **Bun** - [Download Bun here](https://bun.sh/) (optional, but recommended)
-- **PostgreSQL** (v12 or higher) - [Download here](https://www.postgresql.org/download/)
-- **Git** - [Download here](https://git-scm.com/)
-- **A code editor** (VS Code recommended) - [Download here](https://code.visualstudio.com/)
+## 3. Architecture Diagram
+
+![Architecture Diagram](architecture_png.png)
+
+**Data flow:** The React frontend (Vite dev server on port 8080) makes REST API calls to the Express backend (port 3000). The backend queries the PostgreSQL database using `pg` and returns JSON. No external APIs or third-party services are used.
+
+---
+
+## 4. Prerequisites
+
+Ensure the following are installed before proceeding. Each item includes a verification command to confirm it is available in your system PATH.
+
+**Node.js** (v16 or higher) — [Download here](https://nodejs.org/)
+```sh
+node --version   # should print v16.x.x or higher
+```
+
+**npm** (comes bundled with Node.js)
+```sh
+npm --version
+```
+
+**PostgreSQL** (v12 or higher) — [Download here](https://www.postgresql.org/download/)
+```sh
+psql --version   # should print psql (PostgreSQL) 12.x or higher
+```
+> **Windows users:** After installing PostgreSQL, ensure the `bin` folder (e.g., `C:\Program Files\PostgreSQL\16\bin`) is added to your system PATH so that `psql` is accessible from the terminal.
+
+**Git** — [Download here](https://git-scm.com/)
+```sh
+git --version
+```
+
+**A code editor** (VS Code recommended) — [Download here](https://code.visualstudio.com/)
+
+---
+
+## 5. Installation and Setup
 
 ### Step 1: Clone the Repository
 
@@ -31,7 +74,7 @@ cd learn-grow-ui
 npm install
 ```
 
-Or if you prefer Bun:
+Or if you prefer Bun ([Download Bun here](https://bun.sh/)):
 
 ```sh
 bun install
@@ -39,9 +82,11 @@ bun install
 
 ### Step 3: Set Up PostgreSQL Database
 
-1. **Start PostgreSQL** on your machine (ensure the service is running)
+1. **Start PostgreSQL** on your machine and ensure the service is running.
 
-2. **Create a new database** named `nutrition_lessons`:
+2. **Open a PostgreSQL client** — either `psql` in your terminal or pgAdmin.
+
+3. **Create the database:**
    ```sql
    CREATE DATABASE nutrition_lessons;
    ```
@@ -49,16 +94,30 @@ bun install
 3. **Create the database schema**:
    - Open [schema.sql](schema.sql) from the project root
    - Copy and paste the contents into your PostgreSQL client (pgAdmin, psql, etc.)
-   - Execute the SQL to create the `users` and `user_lessons` tables
+   - Execute the SQL to create the `users` and all consquent tables
 
 4. **Seed the database** with sample data:
    - Open [seed.sql](seed.sql) from the project root
    - Copy and paste the contents into your PostgreSQL client
-   - Execute the SQL to populate the database with sample users and lessons
+   - Execute the SQL to populate the database with sample users and all units, lessons, and quizzes
 
 ### Step 4: Configure Environment Variables
 
-The `.env` file in the project root contains necessary configuration. Verify/update the following variables:
+The project uses a `.env` file that is **not included in the repository** (it is listed in `.gitignore`). You must create it manually.
+
+In the project root, create a new file named exactly `.env` (no `.example` extension). You can do this from your terminal:
+
+**macOS / Linux:**
+```sh
+cp .env.example .env
+```
+
+**Windows (PowerShell):**
+```powershell
+copy .env.example .env
+```
+
+Then open `.env` in your code editor and fill in your credentials. The file should look like this:
 
 ```env
 # API Configuration
@@ -73,45 +132,62 @@ VITE_DB_PASSWORD=<YOUR_POSTGRES_PASSWORD>
 VITE_DB_NAME=nutrition_lessons
 ```
 
-**Important**: Make sure to replace `<YOUR_POSTGRES_PASSWORD>` with your actual PostgreSQL password.
+**Important:** Replace `<YOUR_POSTGRES_PASSWORD>` with your actual PostgreSQL password. If you did not set a password when installing PostgreSQL, try leaving the value blank or using `postgres`.
 
-### Step 5: Start the Application
+---
 
-The application requires two servers running simultaneously:
+## 6. Running the Application
 
-**Terminal 1 - Start the API Server** (port 3000):
+The application requires **two terminals running simultaneously.**
+
+**Terminal 1 — Start the API Server** (port 3000):
 ```sh
 npm run api
 ```
+You should see: `API server running on port 3000`
 
-You should see: `API Server running on port 3000`
-
-**Terminal 2 - Start the Development Server** (port 8080):
+**Terminal 2 — Start the Frontend Dev Server** (port 8080):
 ```sh
 npm run dev
 ```
-
 You should see: `Local: http://localhost:8080/`
 
-### Step 6: Access the Application
-
-Open your web browser and navigate to:
-
+**Then open your browser and navigate to:**
 ```
 http://localhost:8080
 ```
 
-The application will automatically log you in as the demo user (Alice). You should see the home page displaying 3 lessons:
-1. Nutrition Basics (Completed)
-2. Proteins (In Progress)
-3. Healthy Fats (Locked)
+The application will automatically log you in as the demo user Alice. The home page should display three lessons:
+1. **Nutrition Basics** — Completed
+2. **Proteins** — In Progress
+3. **Healthy Fats** — Locked
 
-### Testing the Application
+
+## 7. Verifying the Vertical Slice
+
+This section walks through the full vertical slice: triggering a feature in the UI, confirming the database was updated, and verifying the change persists after a page refresh.
+
+**The feature:** Completing the "Proteins" quiz marks the lesson as `Completed` in the database.
+
+### Steps to trigger the feature:
 
 1. **View a lesson**: Click on "Proteins" to read the lesson material
 2. **Take a quiz**: Click "Quiz Me" to attempt the quiz (get 60% or higher to pass)
-3. **Verify database persistence**: Complete the quiz, then refresh the page - your progress should be saved
-4. **Check database**: Open pgAdmin and query `SELECT * FROM user_lessons WHERE user_id = 1;` to verify the completion status
+
+### Confirm the database was updated:
+
+Open pgAdmin or a `psql` terminal and run:
+
+```sql
+SELECT * FROM user_lessons WHERE user_id = 1;
+```
+
+You should see a row for `lesson_id = 2` (Proteins) with `status = 'Completed'` and a timestamp in the `completed_at` column.
+
+### Verify persistence after refresh:
+
+1. Refresh the browser page (`Ctrl+R` or `F5`).
+2. The home screen should still show **Proteins** as Completed and **Healthy Fats** as unlocked — confirming the state was read back from the database and not just held in memory.
 
 ### Troubleshooting
 
@@ -145,71 +221,3 @@ The application will automatically log you in as the demo user (Alice). You shou
 ### Stopping the Application
 
 Press `Ctrl+C` in both terminal windows to stop the servers.
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

@@ -1,6 +1,10 @@
--- Drop tables if they already exist (safe reset order)
+-- ==========================================
+-- SAFE RESET
+-- ==========================================
+
 DROP TABLE IF EXISTS User_Badges;
 DROP TABLE IF EXISTS User_Quizzes;
+DROP TABLE IF EXISTS User_Card_Progress;
 DROP TABLE IF EXISTS User_Lessons;
 DROP TABLE IF EXISTS Quiz_Answers;
 DROP TABLE IF EXISTS Quiz_Questions;
@@ -11,9 +15,10 @@ DROP TABLE IF EXISTS Units;
 DROP TABLE IF EXISTS Badges;
 DROP TABLE IF EXISTS Users;
 
--- ==========================
--- Users
--- ==========================
+-- ==========================================
+-- USERS
+-- ==========================================
+
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -117,26 +122,26 @@ CREATE TABLE User_Lessons (
     user_id INT NOT NULL,
     lesson_id INT NOT NULL,
     status VARCHAR(50) NOT NULL,
+    last_card_viewed INT DEFAULT 0,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
-    CONSTRAINT fk_user_lesson_user
-        FOREIGN KEY (user_id)
-        REFERENCES Users(user_id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_user_lesson_lesson
-        FOREIGN KEY (lesson_id)
-        REFERENCES Lessons(lesson_id)
-        ON DELETE CASCADE,
+
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (lesson_id) REFERENCES Lessons(lesson_id) ON DELETE CASCADE,
+
     CONSTRAINT unique_user_lesson UNIQUE (user_id, lesson_id)
 );
 
--- ==========================
--- User_Quizzes
--- ==========================
+-- ==========================================
+-- USER QUIZZES
+-- ==========================================
+
 CREATE TABLE User_Quizzes (
     user_quiz_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     quiz_id INT NOT NULL,
     score INT NOT NULL,
+    best_score BOOLEAN DEFAULT FALSE,
     attempt_number INT NOT NULL,
     date_taken_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     passed BOOLEAN NOT NULL,
@@ -152,30 +157,28 @@ CREATE TABLE User_Quizzes (
     CONSTRAINT unique_user_quiz UNIQUE (user_id, quiz_id)
 );
 
--- ==========================
--- Badges
--- ==========================
+-- ==========================================
+-- BADGES
+-- ==========================================
+
 CREATE TABLE Badges (
     badge_id SERIAL PRIMARY KEY,
     badge_name VARCHAR(100) NOT NULL,
     badge_level INT NOT NULL
 );
 
--- ==========================
--- User_Badges
--- ==========================
+-- ==========================================
+-- USER BADGES
+-- ==========================================
+
 CREATE TABLE User_Badges (
     user_badge_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     badge_id INT NOT NULL,
     earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_badge_user
-        FOREIGN KEY (user_id)
-        REFERENCES Users(user_id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_user_badge_badge
-        FOREIGN KEY (badge_id)
-        REFERENCES Badges(badge_id)
-        ON DELETE CASCADE,
+
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (badge_id) REFERENCES Badges(badge_id) ON DELETE CASCADE,
+
     CONSTRAINT unique_user_badge UNIQUE (user_id, badge_id)
 );
