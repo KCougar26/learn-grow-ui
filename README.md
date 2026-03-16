@@ -120,16 +120,15 @@ copy .env.example .env
 Then open `.env` in your code editor and fill in your credentials. The file should look like this:
 
 ```env
-# API Configuration
-VITE_API_URL=http://localhost:3000
-API_PORT=3000
-
 # Database Configuration
-VITE_DB_HOST=localhost
-VITE_DB_PORT=5432
-VITE_DB_USER=postgres
-VITE_DB_PASSWORD=<YOUR_POSTGRES_PASSWORD>
-VITE_DB_NAME=nutrition_lessons
+DB_USER=postgres
+DB_PASSWORD=password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=learn_grow
+
+# Server Configuration
+PORT=3001
 ```
 
 **Important:** Replace `<YOUR_POSTGRES_PASSWORD>` with your actual PostgreSQL password. If you did not set a password when installing PostgreSQL, try leaving the value blank or using `postgres`.
