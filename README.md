@@ -224,16 +224,19 @@ Press `Ctrl+C` in both terminal windows to stop the servers.
 ## 8. EARS Requirements
 **Complete**
 
-- The system shall accept inputs in English.
-- The system shall produce outputs in American Sign Language.
-- When a user updates the English text, the system shall update the ASL syntax translation to reflect the changes.
-- While the system is generating a translation, the system shall display a progress indicator.
+- The system shall accept display nutrition lessons to the user.
+- The system shall provide score feedback after a quiz is taken by a user.
+- When a user selects a lesson, the system shall display the lesson and lesson cards.
+- While the system is providing a lesson to the user, the system shall show a lesson progress indicator.
+- When a user selects a wrong answer on a quiz, the system shall show it as incorrect with the correct answer highlighted.
 
 **Not Complete**
 
-- When a user enters English text, the system shall generate and display the corresponding ASL syntax translation.
-- When a user requests sentence playback, the system shall play the full ASL translation video for the sentence.
-- When a user selects a word in the ASL syntax output, the system shall jump playback to the corresponding sign.
-- When a user selects a playback speed, the system shall adjust the playback speed for sign videos accordingly.
-- While sentence playback is in progress, the system shall highlight the word currently being signed.
-- While the system is offline or the video service is unavailable, the system shall prevent attempted interactions.
+- When a user opens their profile, the system shall display current user's progress page.
+- When a user selects their badges page, the system shall display all badges the user has obtained.
+- When a user opens the settings page, the system shall display the settings page.
+- When a user selects a, the system shall adjust the playback speed for sign videos accordingly.
+- While quiz is being taken, the system will not allow the user to proceed until an answer is selected.
+- The system shall accept valid login requests
+- When a new user starts the app, the system shall suggest they make an account.
+- When a not logged in user uses the app, the system shall only allow the 1st lesson to be used.
