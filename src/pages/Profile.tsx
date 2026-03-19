@@ -3,10 +3,13 @@ import { lessons, badges } from "@/data/lessons";
 import { useUser } from "@/hooks/useUserContext";
 import { useUserLessons } from "@/hooks/useUserLessons";
 import { User, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 const Profile = () => {
   const { user, loading } = useUser();
   const { userLessons } = useUserLessons(user?.user_id || null);
+  const navigate = useNavigate();
   
   // Get Alice's lesson progress
   const completedLessons = userLessons.filter((ul) => ul.status === 'Completed');
@@ -77,7 +80,10 @@ const Profile = () => {
               </div>
             ))}
           </div>
-          <button className="text-xs text-primary font-semibold mt-2 flex items-center gap-1 hover:underline">
+          <button
+            onClick={() => navigate('/badges')}
+            className="text-xs text-primary font-semibold mt-2 flex items-center gap-1 hover:underline"
+          >
             View all badges <ChevronRight className="w-3 h-3" />
           </button>
         </section>

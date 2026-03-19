@@ -15,6 +15,7 @@ import About from "./pages/About";
 import HelperBot from "./pages/HelperBot";
 import NotFound from "./pages/NotFound";
 import Unit from "./pages/Unit";
+import Badges from "./pages/Badges";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/bot" element={<HelperBot />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/badges" element={<Badges />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
