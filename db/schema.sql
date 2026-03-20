@@ -161,22 +161,22 @@ CREATE TABLE User_Quizzes (
 -- ==========================================
 -- BADGES
 -- ==========================================
-
 CREATE TABLE Badges (
     badge_id SERIAL PRIMARY KEY,
     badge_name VARCHAR(100) NOT NULL,
-    badge_level INT NOT NULL
+    badge_level INT NOT NULL,
+    description TEXT,
+    icon VARCHAR(255)
 );
 
 -- ==========================================
--- USER BADGES
+-- USER BADGES (ONLY STORES EARNED BADGES)
 -- ==========================================
-
 CREATE TABLE User_Badges (
     user_badge_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     badge_id INT NOT NULL,
-    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    earned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (badge_id) REFERENCES Badges(badge_id) ON DELETE CASCADE,
