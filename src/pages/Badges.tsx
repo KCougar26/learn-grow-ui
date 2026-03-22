@@ -4,7 +4,7 @@ type Badge = {
   badge_id: number
   badge_name: string
   badge_level: number
-  description: string | null
+  badge_description: string | null
   icon: string | null
   earned: boolean
   earned_at: string | null
@@ -61,7 +61,7 @@ export default function Badges({ userId }: Props) {
               </div>
 
               <h4>{badge.badge_name}</h4>
-              <p style={descStyle}>{badge.description}</p>
+              <p style={descStyle}>{badge.badge_description}</p>
 
               <small>
                 Earned:{" "}
@@ -96,7 +96,7 @@ export default function Badges({ userId }: Props) {
             </div>
 
             <h4>{badge.badge_name}</h4>
-            <p style={descStyle}>{badge.description}</p>
+            <p style={descStyle}>{badge.badge_description}</p>
           </div>
         ))}
       </div>
