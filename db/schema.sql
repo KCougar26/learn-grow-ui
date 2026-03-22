@@ -166,7 +166,7 @@ CREATE TABLE Badges (
     badge_id SERIAL PRIMARY KEY,
     badge_name VARCHAR(100) NOT NULL,
     badge_level INT NOT NULL,
-    description TEXT,
+    badge_description TEXT,
     icon VARCHAR(255)
 );
 
