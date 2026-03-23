@@ -249,6 +249,53 @@ app.get('/api/lessons/:lessonId/quiz', async (req, res) => {
   }
 });
 
+// GET user stats for badge checking
+app.get('/api/users/:userId/stats', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Count completed lessons
+    const lessonsResult = await pool.query(`
+      SELECT COUNT(*) AS completed_count
+      FROM User_Lessons
+      WHERE user_id = $1 AND LOWER(status) = 'completed'
+    `, [userId]);
+
+    // Count passed quizzes and perfect-score quizzes
+    const quizzesResult = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE uq.passed = TRUE) AS passed_count,
+        COUNT(*) FILTER (WHERE uq.passed = TRUE AND uq.score >= q.num_of_questions) AS perfect_count
+      FROM User_Quizzes uq
+      JOIN Quizzes q ON q.quiz_id = uq.quiz_id
+      WHERE uq.user_id = $1
+    `, [userId]);
+
+    // Units where every lesson is completed
+    const unitsResult = await pool.query(`
+      SELECT l.unit_id
+      FROM Lessons l
+      LEFT JOIN User_Lessons ul
+        ON ul.lesson_id = l.lesson_id AND ul.user_id = $1
+      GROUP BY l.unit_id
+      HAVING COUNT(l.lesson_id) > 0
+        AND COUNT(l.lesson_id) = COUNT(CASE WHEN LOWER(ul.status) = 'completed' THEN 1 END)
+    `, [userId]);
+
+    res.json({
+      success: true,
+      data: {
+        completedLessons: parseInt(lessonsResult.rows[0].completed_count, 10),
+        passedQuizzes: parseInt(quizzesResult.rows[0].passed_count, 10),
+        perfectScoreQuizzes: parseInt(quizzesResult.rows[0].perfect_count, 10),
+        completedUnitIds: unitsResult.rows.map((r) => r.unit_id),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.post('/api/users/:userId/quiz/:quizId/result', async (req, res) => {
   try {
     const { userId, quizId } = req.params;
@@ -322,7 +369,7 @@ app.delete('/api/users/:userId/profile-picture', async (req, res) => {
 app.get('/api/badges', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT badge_id, badge_name, badge_description, badge_level
+      SELECT badge_id, badge_name, badge_description, badge_level, icon
       FROM Badges
       ORDER BY badge_level ASC, badge_id ASC
     `);
