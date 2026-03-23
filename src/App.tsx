@@ -16,6 +16,7 @@ import HelperBot from "./pages/HelperBot";
 import NotFound from "./pages/NotFound";
 import Unit from "./pages/Unit";
 import InProgressLessons from "./pages/InProgressLessons";
+import Badges from "./pages/Badges";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/streaks" element={<Streaks />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/badges" element={<Badges />} />
             <Route path="/about" element={<About />} />
             <Route path="/bot" element={<HelperBot />} />
             <Route path="*" element={<NotFound />} />

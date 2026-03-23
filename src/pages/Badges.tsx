@@ -1,139 +1,121 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import AppLayout from "@/components/AppLayout";
+import { useUser } from "@/hooks/useUserContext";
 
 type Badge = {
-  badge_id: number
-  badge_name: string
-  badge_level: number
-  badge_description: string | null
-  icon: string | null
-  earned: boolean
-  earned_at: string | null
-}
+  badge_id: number;
+  badge_name: string;
+  badge_description: string | null;
+  badge_level: number;
+  icon: string | null;
+  earned: boolean;
+};
 
-type Props = {
-  userId: number
-}
-
-export default function Badges({ userId }: Props) {
-  const [earned, setEarned] = useState<Badge[]>([])
-  const [unearned, setUnearned] = useState<Badge[]>([])
-  const [loading, setLoading] = useState(true)
+export default function Badges() {
+  const { user } = useUser();
+  const location = useLocation();
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user?.user_id) return;
+    setLoading(true);
+
     async function fetchBadges() {
       try {
-        const res = await fetch(`/api/badges?userId=${userId}`)
-        const data: Badge[] = await res.json()
+        const apiUrl = import.meta.env.VITE_API_URL || "";
 
-        setEarned(data.filter(b => b.earned))
-        setUnearned(data.filter(b => !b.earned))
+        const [allRes, earnedRes] = await Promise.all([
+          fetch(`${apiUrl}/api/badges`),
+          fetch(`${apiUrl}/api/users/${user!.user_id}/badges`),
+        ]);
+
+        const [allJson, earnedJson] = await Promise.all([
+          allRes.json(),
+          earnedRes.json(),
+        ]);
+
+        const allBadges = Array.isArray(allJson.data) ? allJson.data : [];
+        const earnedIds = new Set<number>(
+          Array.isArray(earnedJson.data)
+            ? earnedJson.data.map((b: { badge_id: number }) => b.badge_id)
+            : []
+        );
+
+        setBadges(
+          allBadges.map((b: Omit<Badge, "earned">) => ({
+            ...b,
+            earned: earnedIds.has(b.badge_id),
+          }))
+        );
       } catch (err) {
-        console.error("Failed to fetch badges", err)
+        console.error("Failed to fetch badges", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchBadges()
-  }, [userId])
+    fetchBadges();
+  }, [user?.user_id, location.pathname]);
 
-  if (loading) return <p>Loading badges...</p>
+  const earnedCount = badges.filter((b) => b.earned).length;
 
   return (
-    <div style={{ padding: "1rem" }}>
-      {/* ===================== */}
-      {/* EARNED BADGES */}
-      {/* ===================== */}
-      <h2>🏆 Earned Badges</h2>
+    <AppLayout>
+      <div className="flex flex-col gap-4 px-4 pt-5 pb-8">
 
-      {earned.length === 0 ? (
-        <p>No badges earned yet</p>
-      ) : (
-        <div style={gridStyle}>
-          {earned.map(badge => (
-            <div key={badge.badge_id} style={earnedCard}>
-              <div style={iconStyle}>
-                {badge.icon ? (
-                  <img src={badge.icon} alt={badge.badge_name} />
-                ) : (
-                  "🏅"
-                )}
-              </div>
-
-              <h4>{badge.badge_name}</h4>
-              <p style={descStyle}>{badge.badge_description}</p>
-
-              <small>
-                Earned:{" "}
-                {badge.earned_at
-                  ? new Date(badge.earned_at).toLocaleDateString()
-                  : ""}
-              </small>
-            </div>
-          ))}
+        <div>
+          <h1 className="text-xl font-extrabold text-foreground">Badges</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Complete lessons and streaks to unlock achievements.
+          </p>
         </div>
-      )}
 
-      {/* ===================== */}
-      {/* SPACING */}
-      {/* ===================== */}
-      <div style={{ margin: "2rem 0" }} />
-
-      {/* ===================== */}
-      {/* UNEARNED BADGES */}
-      {/* ===================== */}
-      <h2>🔒 Locked Badges</h2>
-
-      <div style={gridStyle}>
-        {unearned.map(badge => (
-          <div key={badge.badge_id} style={unearnedCard}>
-            <div style={iconStyle}>
-              {badge.icon ? (
-                <img src={badge.icon} alt={badge.badge_name} />
-              ) : (
-                "🔒"
-              )}
-            </div>
-
-            <h4>{badge.badge_name}</h4>
-            <p style={descStyle}>{badge.badge_description}</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <p className="text-sm text-muted-foreground">Loading badges...</p>
           </div>
-        ))}
+        ) : (
+          <div className="bg-card rounded-2xl border border-border card-elevated p-4">
+            <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-1.5">
+              🏅 Badges
+              <span className="ml-auto text-xs font-semibold text-primary">
+                {earnedCount} / {badges.length} earned
+              </span>
+            </h2>
+
+            {badges.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No badges available yet.</p>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {badges.map((badge) => (
+                  <div
+                    key={badge.badge_id}
+                    className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center ${
+                      badge.earned
+                        ? "bg-secondary border-border"
+                        : "bg-muted/40 border-transparent opacity-40"
+                    }`}
+                  >
+                    <span className="text-2xl">
+                      {badge.earned ? (badge.icon ?? "🏅") : "🔒"}
+                    </span>
+                    <span className="text-[10px] font-bold text-foreground leading-tight">
+                      {badge.badge_name}
+                    </span>
+                    {badge.badge_description && (
+                      <span className="text-[9px] text-muted-foreground leading-tight">
+                        {badge.badge_description}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    </div>
-  )
-}
-
-//
-// 🎨 Styles (simple inline for now)
-//
-
-const gridStyle: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-  gap: "1rem",
-}
-
-const earnedCard: React.CSSProperties = {
-  padding: "1rem",
-  borderRadius: "10px",
-  background: "#f5f5f5",
-  textAlign: "center",
-  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-}
-
-const unearnedCard: React.CSSProperties = {
-  ...earnedCard,
-  opacity: 0.4,
-  filter: "grayscale(100%)",
-}
-
-const iconStyle: React.CSSProperties = {
-  fontSize: "2rem",
-  marginBottom: "0.5rem",
-}
-
-const descStyle: React.CSSProperties = {
-  fontSize: "0.8rem",
-  color: "#555",
+    </AppLayout>
+  );
 }

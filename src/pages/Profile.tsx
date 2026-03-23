@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { badges } from "@/data/lessons";
 import { useUser } from "@/hooks/useUserContext";
@@ -8,6 +9,7 @@ import { ChevronRight, Camera, Trash2 } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { user, loading, updateProfilePicture } = useUser();
   const { lessons: lessonCatalog, units } = useUserLessonsWithStatus(user?.user_id || null);
   const { inProgressLessons: inProgressDetails } = useInProgressLessons(user?.user_id || null);
@@ -184,7 +186,7 @@ const Profile = () => {
               </div>
             ))}
           </div>
-          <button className="text-xs text-primary font-semibold mt-3 flex items-center gap-1 hover:underline">
+          <button onClick={() => navigate("/badges")} className="text-xs text-primary font-semibold mt-3 flex items-center gap-1 hover:underline">
             View all badges <ChevronRight className="w-3 h-3" />
           </button>
         </div>

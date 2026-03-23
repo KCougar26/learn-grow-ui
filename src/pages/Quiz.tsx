@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { useUser } from "@/hooks/useUserContext";
 import { useCompleteLesson } from "@/hooks/useCompleteLesson";
+import { checkBadges } from "@/lib/checkBadges";
+import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 
 // 80% of 5 questions = 4 correct needed to pass
@@ -152,9 +154,13 @@ const Quiz = () => {
       }
     }
 
-    // Mark lesson complete if passed
+    // Mark lesson complete if passed, then check for newly earned badges
     if (passed) {
       await markLessonComplete(user.user_id, lessonId);
+      const newBadges = await checkBadges(user.user_id, user.current_streak);
+      newBadges.forEach((badge) => {
+        toast(`${badge.icon} Badge unlocked: ${badge.name}!`);
+      });
     }
   };
 
