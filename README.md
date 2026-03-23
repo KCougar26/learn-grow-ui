@@ -229,11 +229,11 @@ Press `Ctrl+C` in both terminal windows to stop the servers.
 - When a user selects a lesson, the system shall display the lesson and lesson cards.
 - While the system is providing a lesson to the user, the system shall show a lesson progress indicator.
 - When a user selects a wrong answer on a quiz, the system shall show it as incorrect with the correct answer highlighted.
+- When a user opens their profile, the system shall display current user's progress page.
+- When a user selects their badges page, the system shall display all badges the user has obtained.
 
 **Not Complete**
 
-- When a user opens their profile, the system shall display current user's progress page.
-- When a user selects their badges page, the system shall display all badges the user has obtained.
 - When a user opens the settings page, the system shall display the settings page.
 - When a user selects a, the system shall adjust the playback speed for sign videos accordingly.
 - While quiz is being taken, the system will not allow the user to proceed until an answer is selected.
