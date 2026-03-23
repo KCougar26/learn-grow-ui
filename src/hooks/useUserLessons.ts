@@ -6,7 +6,23 @@ interface UserLesson {
   lesson_id: number;
   status: 'Completed' | 'In Progress' | 'Locked';
   completed_at: string | null;
+  last_card_viewed?: number;
 }
+
+const normalizeLessonStatus = (
+  rawStatus: unknown,
+  completedAt: string | null | undefined
+): UserLesson['status'] => {
+  const normalized = String(rawStatus ?? '').trim().toLowerCase();
+
+  if (normalized === 'completed') return 'Completed';
+  if (normalized === 'in progress' || normalized === 'in_progress' || normalized === 'inprogress') {
+    return 'In Progress';
+  }
+  if (normalized === 'locked') return 'Locked';
+
+  return completedAt ? 'Completed' : 'In Progress';
+};
 
 export const useUserLessons = (userId: number | null) => {
   const [userLessons, setUserLessons] = useState<UserLesson[]>([]);
@@ -20,7 +36,7 @@ export const useUserLessons = (userId: number | null) => {
 
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
       // Add cache buster to force fresh data
       const response = await fetch(`${apiUrl}/api/users/${userId}/lessons?t=${Date.now()}`);
       
@@ -30,7 +46,15 @@ export const useUserLessons = (userId: number | null) => {
 
       const data = await response.json();
       console.log('Fetched user lessons from API:', data.data);
-      setUserLessons(data.data);
+      const normalizedLessons: UserLesson[] = Array.isArray(data.data)
+        ? data.data.map((row: UserLesson & { status?: unknown }) => ({
+            ...row,
+            completed_at: row.completed_at ?? null,
+            status: normalizeLessonStatus(row.status, row.completed_at),
+          }))
+        : [];
+
+      setUserLessons(normalizedLessons);
     } catch (error) {
       console.error('Error fetching user lessons:', error);
       // Fallback to mock data if API fails
