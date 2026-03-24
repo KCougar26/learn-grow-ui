@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { badges } from "@/data/lessons";
@@ -8,6 +8,7 @@ import { useInProgressLessons } from "@/hooks/useInProgressLessons";
 import { ChevronRight, Camera, Trash2 } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
+
 const Profile = () => {
   const navigate = useNavigate();
   const { user, loading, updateProfilePicture } = useUser();
@@ -15,6 +16,22 @@ const Profile = () => {
   const { inProgressLessons: inProgressDetails } = useInProgressLessons(user?.user_id || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+
+
+  const [earnedBadgeIds, setEarnedBadgeIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!user?.user_id) return;
+    const apiUrl = import.meta.env.VITE_API_URL || "";
+    fetch(`${apiUrl}/api/users/${user.user_id}/badges`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          setEarnedBadgeIds(new Set(data.data.map((b: { badge_id: number }) => b.badge_id)));
+        }
+      })
+      .catch(() => {});
+  }, [user?.user_id]);
 
   const lessonTitleById = useMemo(
     () => new Map(lessonCatalog.map((lesson) => [lesson.lesson_id, lesson.title])),
@@ -152,7 +169,7 @@ const Profile = () => {
             {[
               { value: completedUnits.length, label: "Units\nCompleted" },
               { value: streak, label: "Day\nStreak" },
-              { value: earnedBadges.length, label: "Badges\nEarned" },
+              { value: earnedBadgeIds.size, label: "Badges\nEarned" },
             ].map((stat) => (
               <div key={stat.label} className="py-4 text-center">
                 <p className="text-2xl font-extrabold text-primary">{stat.value}</p>
@@ -174,7 +191,7 @@ const Profile = () => {
               <div
                 key={badge.id}
                 className={`flex-1 flex flex-col items-center gap-1 p-2.5 rounded-xl border ${
-                  badge.earned
+                  earnedBadgeIds.has(badge.id)
                     ? "bg-secondary border-border"
                     : "bg-muted/40 border-transparent opacity-40"
                 }`}
@@ -213,7 +230,8 @@ const Profile = () => {
                   : 0;
 
                 return (
-                  <div key={userLesson.lesson_id} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
+                  <div key={userLesson.lesson_id} onClick={() => navigate(`/lesson?lessonId=${userLesson.lesson_id}`)} 
+                    className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0 cursor-pointer hover:bg-secondary/50 rounded-lg px-1 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-extrabold text-accent">{userLesson.lesson_id}</span>
                     </div>
@@ -245,7 +263,8 @@ const Profile = () => {
             <div className="flex flex-col gap-1">
               {completedUnits.map((unit) => {
                 return (
-                  <div key={unit.unit_id} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
+                  <div key={unit.unit_id} onClick={() => navigate(`/unit/${unit.unit_id}`)} 
+                    className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0 cursor-pointer hover:bg-secondary/50 rounded-lg px-1 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-extrabold text-primary-foreground">✓</span>
                     </div>
@@ -288,8 +307,8 @@ const Profile = () => {
               ))}
             </div>
           </div>
-          <button className="w-full py-2 rounded-xl bg-streak-foreground/20 hover:bg-streak-foreground/30 text-streak-foreground font-bold text-xs transition-colors">
-            Log today's streak!
+          <button onClick={() => navigate("/streaks")} className="w-full py-2 rounded-xl bg-streak-foreground/20 hover:bg-streak-foreground/30 text-streak-foreground font-bold text-xs transition-colors">
+          See streak history →
           </button>
           <p className="text-[10px] text-streak-foreground/70 text-center mt-2">
             You don't need to be perfect — just consistent 💚
