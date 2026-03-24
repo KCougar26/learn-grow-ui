@@ -11,7 +11,7 @@ interface UserAvatarProps {
 const sizeMap = {
   sm: { container: "w-8 h-8", text: "text-xs", icon: "w-4 h-4" },
   md: { container: "w-10 h-10", text: "text-sm", icon: "w-5 h-5" },
-  lg: { container: "w-20 h-20", text: "text-2xl", icon: "w-10 h-10" },
+  lg: { container: "w-28 h-28", text: "text-3xl", icon: "w-12 h-12" },
 };
 
 const UserAvatar = ({
