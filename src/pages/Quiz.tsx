@@ -212,27 +212,52 @@ const Quiz = () => {
           </p>
 
           <div className="flex gap-3 w-full">
-            <button
-              onClick={async () => {
-                await handleQuizComplete();
-                setTimeout(() => navigate("/"), 300);
-              }}
-              className="flex-1 py-3 rounded-xl bg-card border border-border text-foreground font-semibold text-sm"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => {
-                setCurrentQ(0);
-                setSelectedAnswer(null);
-                setShowFeedback(false);
-                setScore(0);
-                setFinished(false);
-              }}
-              className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm"
-            >
-              Try Again
-            </button>
+  {passed ? (
+    <>
+      <button
+        onClick={async () => {
+          await handleQuizComplete();
+          setTimeout(() => navigate("/"), 300);
+        }}
+        className="flex-1 py-3 rounded-xl bg-card border border-border text-foreground font-semibold text-sm"
+      >
+        All Lessons
+      </button>
+      <button
+        onClick={async () => {
+          await handleQuizComplete();
+          setTimeout(() => navigate(`/lesson?lessonId=${lessonId + 1}`), 300);
+        }}
+        className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm"
+      >
+        Next Lesson →
+      </button>
+    </>
+  ) : (
+    <>
+                <button
+                  onClick={async () => {
+                    await handleQuizComplete();
+                    setTimeout(() => navigate("/"), 300);
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-card border border-border text-foreground font-semibold text-sm"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentQ(0);
+                    setSelectedAnswer(null);
+                    setShowFeedback(false);
+                    setScore(0);
+                    setFinished(false);
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm"
+                >
+                  Try Again
+                </button>
+              </>
+            )}
           </div>
         </div>
       </AppLayout>
