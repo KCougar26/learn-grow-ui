@@ -3,7 +3,8 @@ import AppHeader from "./AppHeader";
 import AppMenu, { menuGroups, authMenuItem } from "./AppMenu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation, useNavigate } from "react-router-dom";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, LogOut, LogIn } from "lucide-react";
+import { useUser } from "@/hooks/useUserContext";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useUser();
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -89,10 +91,15 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             {/* Auth Button at Bottom */}
             <div className="mt-4 pt-4 border-t border-border">
               {(() => {
-                const isActive = location.pathname === authMenuItem.path;
+                const isLoggedIn = !!user;
+                const AuthIcon = isLoggedIn ? LogOut : LogIn;
+                const authLabel = isLoggedIn ? "Sign Out" : "Sign In / Sign Up";
+                const authDescription = isLoggedIn ? "Log out of your account" : "Create or access your account";
+                const isActive = !isLoggedIn && location.pathname === "/auth";
+
                 return (
                   <button
-                    onClick={() => navigate(authMenuItem.path)}
+                    onClick={() => isLoggedIn ? logout() : navigate("/auth")}
                     className={`w-full flex items-start gap-3 p-3 rounded-lg transition-colors text-left group ${
                       isActive ? "bg-secondary" : "hover:bg-secondary"
                     }`}
@@ -104,12 +111,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                           : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
                       }`}
                     >
-                      <authMenuItem.icon className="w-4 h-4" />
+                      <AuthIcon className="w-4 h-4" />
                     </div>
                     {!isSidebarCollapsed && (
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{authMenuItem.label}</p>
-                        <p className="text-xs text-muted-foreground">{authMenuItem.description}</p>
+                        <p className="font-semibold text-foreground text-sm">{authLabel}</p>
+                        <p className="text-xs text-muted-foreground">{authDescription}</p>
                       </div>
                     )}
                   </button>

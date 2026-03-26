@@ -41,9 +41,13 @@ const Auth = () => {
       // LOGIN
       login(data.token, data.userId);
 
-      const redirect =
-        localStorage.getItem("redirectAfterLogin") || "/";
-      navigate(redirect);
+      if (data.token) {
+        login(data.token, data.userId);
+
+        const redirect = localStorage.getItem("redirectAfterLogin") || "/";
+        localStorage.removeItem("redirectAfterLogin");  // clear it after use
+        navigate(redirect);
+}
     } else if (data.success) {
       // REGISTER → auto switch to login
       alert("Account created! Please sign in.");
@@ -57,7 +61,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-secondary transition-colors">
+        <button onClick={() => navigate("/")} className="p-2 rounded-lg hover:bg-secondary transition-colors">
           <ArrowLeft className="w-5 h-5 text-foreground" />
         </button>
       </div>

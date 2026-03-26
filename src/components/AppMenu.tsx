@@ -1,5 +1,6 @@
-import { X, User, BookOpen, Flame, Settings, Info, LogIn, Clock3 } from "lucide-react";
+import { X, User, BookOpen, Flame, Settings, Info, LogIn, Clock3, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/hooks/useUserContext";
 
 interface AppMenuProps {
   isOpen: boolean;
@@ -44,11 +45,25 @@ export const authMenuItem = { icon: LogIn, label: "Sign In / Sign Up", descripti
 
 const AppMenu = ({ isOpen, onClose }: AppMenuProps) => {
   const navigate = useNavigate();
+  const { user, logout } = useUser();
 
   const handleNavigate = (path: string) => {
     navigate(path);
     onClose();
   };
+
+  const handleAuth = () => {
+    if (user) {
+      logout();
+      onClose();
+    } else {
+      handleNavigate("/auth");
+    }
+  };
+
+  const authLabel = user ? "Sign Out" : "Sign In / Sign Up";
+  const AuthIcon = user ? LogOut : LogIn;
+  const authDescription = user ? "Log out of your account" : "Create or access your account";
 
   return (
     <>
@@ -105,15 +120,15 @@ const AppMenu = ({ isOpen, onClose }: AppMenuProps) => {
           {/* Auth Button at Bottom */}
           <div className="mt-4 pt-4 border-t border-border">
             <button
-              onClick={() => handleNavigate(authMenuItem.path)}
+              onClick={handleAuth}
               className="w-full flex items-start gap-3 p-3 rounded-lg hover:bg-secondary transition-colors text-left group"
             >
               <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <authMenuItem.icon className="w-4 h-4" />
+                <AuthIcon className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-semibold text-foreground text-sm">{authMenuItem.label}</p>
-                <p className="text-xs text-muted-foreground">{authMenuItem.description}</p>
+                <p className="font-semibold text-foreground text-sm">{authLabel}</p>
+                <p className="text-xs text-muted-foreground">{authDescription}</p>
               </div>
             </button>
           </div>
