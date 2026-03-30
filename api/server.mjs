@@ -259,7 +259,13 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/auth/me', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const streakMetrics = await syncUserStreakMetrics(pool, userId);
+
+    let streakMetrics = { currentStreak: 0, longestStreak: 0 };
+    try {
+      streakMetrics = await syncUserStreakMetrics(pool, userId);
+    } catch (streakErr) {
+      console.error('Streak sync failed:', streakErr.message);
+    }
 
     const result = await pool.query(
       `
