@@ -1,11 +1,16 @@
 const API_BASE = "";
 
+export function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-  const res = await fetch(`${API_BASE}${cleanEndpoint}`, {  // ← removed /api prefix
+  const res = await fetch(`${API_BASE}${cleanEndpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
