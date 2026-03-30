@@ -762,10 +762,7 @@ app.delete('/api/users/:userId/profile-picture', authMiddleware, async (req, res
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath));
 
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) {
-    return res.status(404).json({ error: 'Not found' });
-  }
+app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
