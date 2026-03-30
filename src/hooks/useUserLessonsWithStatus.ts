@@ -48,22 +48,25 @@ export const useUserLessonsWithStatus = (userId: number | null) => {
   const { userLessons, refetch: refetchUserLessons } = useUserLessons(userId);
 
   const fetchAllLessons = useCallback(async () => {
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL || '';
-      const data = await apiFetch(`/units`);
+  try {
+    // 1. Get the base URL from your Vercel/Local environment
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:10000';
+    
+    // 2. Pass the FULL URL to your fetcher
+    const data = await apiFetch(`${baseUrl}/api/units`);
 
-      if (data.success && Array.isArray(data.data)) {
-        setRawUnits(data.data);
-      } else {
-        setRawUnits([]);
-      }
-    } catch (error) {
-      console.error('Error fetching units/lessons:', error);
+    if (data.success && Array.isArray(data.data)) {
+      setRawUnits(data.data);
+    } else {
       setRawUnits([]);
-    } finally {
-      setLoadingLessons(false);
     }
-  }, []);
+  } catch (error) {
+    console.error('Error fetching units/lessons:', error);
+    setRawUnits([]);
+  } finally {
+    setLoadingLessons(false);
+  }
+}, []);
 
   useEffect(() => {
     fetchAllLessons();
