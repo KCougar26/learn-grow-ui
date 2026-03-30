@@ -1,20 +1,11 @@
-const API_BASE = "https://learn-grow-ui.onrender.com";
+const API_BASE = "";
 
-export function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-export async function apiFetch(
-  endpoint: string,
-  options: RequestInit = {}
-) {
+export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
-  // This ensures we don't get double slashes (e.g., /api//units)
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  
-  const res = await fetch(`${API_BASE}/api${cleanEndpoint}`, {
+
+  const res = await fetch(`${API_BASE}${cleanEndpoint}`, {  // ← removed /api prefix
     ...options,
     headers: {
       "Content-Type": "application/json",
