@@ -39,10 +39,10 @@ export async function checkBadges(
   currentStreak = 0
 ): Promise<{ name: string; icon: string }[]> {
   const [allJson, earnedJson, lessonsJson, statsJson] = await Promise.all([
-    apiFetch("/badges"),
-    apiFetch(`/users/${userId}/badges`),
-    apiFetch(`/users/${userId}/lessons`),
-    apiFetch(`/users/${userId}/stats`),
+    apiFetch("/api/badges"),
+    apiFetch(`/api/users/${userId}/badges`),
+    apiFetch(`/api/users/${userId}/lessons`),
+    apiFetch(`/api/users/${userId}/stats`),
   ]);
 
   const allBadges: Badge[] = Array.isArray(allJson?.data) ? allJson.data : [];
@@ -80,7 +80,7 @@ export async function checkBadges(
 
   await Promise.all(
     toAward.map((badge) =>
-      apiFetch(`/users/${userId}/badges/${badge.badge_id}/award`, {
+      apiFetch(`/api/users/${userId}/badges/${badge.badge_id}/award`, {
         method: "POST",
       })
     )

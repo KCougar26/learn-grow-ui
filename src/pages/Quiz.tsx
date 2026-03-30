@@ -69,7 +69,7 @@ const Quiz = () => {
     setActiveQuiz([]);
     setLoadingQuiz(true);
 
-    apiFetch(`/lessons/${lessonId}/quiz`)
+    apiFetch(`/api/lessons/${lessonId}/quiz`)
       .then((data) => {
         if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
           const normalised = normaliseQuestions(data.data);
@@ -144,7 +144,7 @@ const Quiz = () => {
 
     if (quizId) {
       try {
-        await apiFetch(`/users/${user.user_id}/quiz/${quizId}/result`, {
+        await apiFetch(`/api/users/${user.user_id}/quiz/${quizId}/result`, {
           method: "POST",
           body: JSON.stringify({ score, passed }),
         });

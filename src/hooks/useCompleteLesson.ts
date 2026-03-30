@@ -25,7 +25,7 @@ export const useCompleteLesson = () => {
 
     try {
       const data = await apiFetch(
-        `/users/${userId}/lessons/${lessonId}/complete`,
+        `/api/users/${userId}/lessons/${lessonId}/complete`,
         { method: "POST" }
       );
 

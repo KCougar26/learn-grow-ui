@@ -27,7 +27,7 @@ export const useInProgressLessons = (userId: number | null) => {
     setError(null);
 
     try {
-      const data = await apiFetch(`/users/${userId}/lessons/in-progress`);
+      const data = await apiFetch(`/api/users/${userId}/lessons/in-progress`);
       if (data.success && Array.isArray(data.data)) {
         setInProgressLessons(data.data);
       } else {

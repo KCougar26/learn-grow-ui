@@ -37,7 +37,7 @@ export const useUserLessons = (userId: number | null) => {
 
     setLoading(true);
     try {
-      const data = await apiFetch(`/users/${userId}/lessons`);
+      const data = await apiFetch(`/api/users/${userId}/lessons`);
       const normalizedLessons: UserLesson[] = Array.isArray(data.data)
         ? data.data.map((row: UserLesson & { status?: unknown }) => ({
             ...row,

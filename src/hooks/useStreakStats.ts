@@ -110,7 +110,7 @@ export const useStreakStats = (userId: number | null) => {
     setLoading(true);
 
     try {
-      const data = await apiFetch(`/users/${userId}/streaks`);
+      const data = await apiFetch(`/api/users/${userId}/streaks`);
 
       if (data?.success && data.data) {
         setStats({
