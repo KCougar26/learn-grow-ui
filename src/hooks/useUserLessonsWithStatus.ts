@@ -53,7 +53,7 @@ export const useUserLessonsWithStatus = (userId: number | null) => {
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:10000';
     
     // 2. Pass the FULL URL to your fetcher
-    const data = await apiFetch(`${baseUrl}/api/units`);
+    const data = await apiFetch(`/api/units`);
 
     if (data.success && Array.isArray(data.data)) {
       setRawUnits(data.data);
