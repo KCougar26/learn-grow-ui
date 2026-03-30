@@ -38,7 +38,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
 
     try {
-      const data = await apiFetch("/auth/me");
+      const data = await apiFetch("/api/auth/me");
       if (data?.success) {
         setUser(data.user);
       } else {
