@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_Ag4EbBV91HSAJw0Tab5U1rchBsVF",
+  "orgId": "team_VDVzD2E68FKPoQIuARpbJoMY",
+  "projectName": "learn-grow-ui",
+  "settings": {
+    "createdAt": 1773717082556,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

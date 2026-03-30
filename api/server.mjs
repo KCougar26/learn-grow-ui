@@ -19,7 +19,7 @@ const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 // ================= DB =================
 const pool = new Pool({
   host: process.env.DB_HOST || process.env.VITE_DB_HOST,
-  port: parseInt(process.env.DB_PORT || process.env.VITE_DB_PORT || '5432'),
+  port: parseInt(process.env.DB_PORT || process.env.VITE_DB_PORT || '6543'),
   user: process.env.DB_USER || process.env.VITE_DB_USER,
   password: process.env.DB_PASSWORD || process.env.VITE_DB_PASSWORD,
   database: process.env.DB_NAME || process.env.VITE_DB_NAME,

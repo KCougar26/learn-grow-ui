@@ -1,11 +1,11 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "learn-grow-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 8080",
-    "api": "node api/server.mjs",
+    "api": "node server.mjs",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
@@ -16,6 +16,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
+    "@aws-sdk/rds-signer": "^3.1014.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -45,7 +46,7 @@
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tanstack/react-query": "^5.83.0",
-    "bcrypt": "^6.0.0",
+    "@vercel/functions": "^3.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -55,7 +56,6 @@
     "embla-carousel-react": "^8.6.0",
     "express": "^5.2.1",
     "input-otp": "^1.4.2",
-    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
     "pg": "^8.20.0",
@@ -94,18 +94,5 @@
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19",
     "vitest": "^3.2.4"
-  },
-  "description": "Learn & Grow is a nutrition education web application built for busy young adults who want to understand food without the overwhelm of diet culture or calorie tracking. The core problem it addresses is that most people lack foundational nutrition knowledge — not because they don't care, but because existing resources are either too clinical, too prescriptive, or too time-consuming to fit into a real daily routine. Rather than telling users what to eat, Learn & Grow focuses on education and understanding: how different nutrients affect the body, how to read food labels confidently, and how to apply nutrition principles to their own goals and preferences. The platform delivers this through short, interactive lessons backed by science and grounded in real-world food examples, paired with light gamification to keep users engaged and motivated. Lessons unlock progressively as users advance, and a quiz at the end of each lesson (requiring 60% or higher to pass) reinforces learning before moving on. Progress is persisted to a PostgreSQL database so users can pick up exactly where they left off across sessions.",
-  "main": "db.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KCougar26/learn-grow-ui.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/KCougar26/learn-grow-ui/issues"
-  },
-  "homepage": "https://github.com/KCougar26/learn-grow-ui#readme"
+  }
 }
